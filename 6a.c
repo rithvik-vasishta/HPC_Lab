@@ -1,27 +1,22 @@
 #include<omp.h>
 #include<stdio.h>
 #include<stdlib.h>
-
 int main(int argc, char** argv){
-	int n=100, i;
-	int tid, a[n];
-	for(i=0; i<100; i++)
-		a[i] = rand()%50;
-	int pmax = 0, smax = 0;
-#pragma omp parallel shared(a, n) private(i, tid)
-	{
-		for(i=0; i<n; i++){
-			printf("\nIn Thread [%d]\n", omp_get_thread_num());
-		       	#pragma omp critical
-			{
-				printf("\nThread [%d] in critical section\n", omp_get_thread_num());
-				if(a[i] > pmax)
-					pmax = a[i];
-			}
+	int i, n=100, a[n];
+	int pmax = 0,smax = 0;
+	for(i=0; i<n; i++)
+		a[i]=rand()%50;
+	#pragma omp parallel shared(a, n) private(i)
+	for(i=0; i<n; i++){
+#pragma omp critical
+		{
+			printf("\nthread [%d] entered critical section",omp_get_thread_num());
+			if(a[i]>pmax)
+				pmax=a[i];
 		}
 	}
 	for(i=0; i<n; i++)
-		smax = (a[i] > smax)?a[i]:smax;
-	printf("\nParallel and Serial Maximums: %d %d", pmax, smax);
+		smax = (a[i]>smax)?a[i]:smax;
+	printf("\nParalle MAx:%d\nSerial Max:%d\n", pmax, smax);
 	return 0;
 }
